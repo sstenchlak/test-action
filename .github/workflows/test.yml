@@ -1,0 +1,29 @@
+name: "Auto-update on commit"
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: true
+
+      - name: Make automated change
+        run: |
+          echo "Updated at $(date -u)" > last-run.txt
+
+      - name: Commit & push changes
+        run: |
+          last_msg=$(git log -1 --pretty=format:%s)
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add last-run.txt
+          git diff-index --quiet HEAD || \
+            (git commit -m "[auto] update timestamp" && \
+             [[ $last_msg != \[auto\]* ]] && git push origin HEAD:${{ github.ref }})
