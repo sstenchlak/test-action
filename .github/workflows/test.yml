@@ -3,7 +3,7 @@ name: "Auto-update on commit"
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   bump:
